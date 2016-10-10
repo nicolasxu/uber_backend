@@ -82,7 +82,6 @@ function getEstimate(req, res, next){
                 // {code: 422, message: "Distance between two points exceeds 100 miles"}
 			res.json(resultJson);
 			
-
 		})
 		.catch(function (err) {
 			// error code 4xx will end up here

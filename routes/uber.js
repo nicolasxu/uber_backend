@@ -62,10 +62,34 @@ function getEstimate(req, res, next){
 	
 	Promise.all([rp(optionsTimeEstimate), rp(optionsPriceEstimate)])
 		.then(function(results) {
-			res.json(results);
+			var resultJson = {code: 200, message: 'success', data: {display_name: 'uberX'}};
+			//res.json(results[1]);
+			var timeEstimates = JSON.parse(results[0]).times;
+			var priceEstimates = JSON.parse(results[1]).prices;
+
+			timeEstimates.forEach(function(estimate){
+				if(estimate.display_name === 'uberX') {
+					resultJson.data.estimate_time = estimate.estimate;
+				}
+			});
+
+			priceEstimates.forEach(function(priceItem){
+				if(priceItem.display_name === 'uberX') {
+					resultJson.data.estimate_price = priceItem.estimate;
+				}
+			});
+                // {code: 200, message: 'success', data: {display_name: 'uberX', estimate_time: 180, estimate_price: '4 - 5 dollars' }}
+                // {code: 422, message: "Distance between two points exceeds 100 miles"}
+			res.json(resultJson);
+			
+
 		})
 		.catch(function (err) {
-			console.log(err);
+			// error code 4xx will end up here
+			if(err.statusCode && err.statusCode === 422) {
+				res.json({code: 422, message: JSON.parse(err.error).message  });
+				return;
+			}
 			res.json(err);
 		});
 }

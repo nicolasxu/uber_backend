@@ -7,19 +7,31 @@
 var app = require('../app');
 var debug = require('debug')('uber_backend:server');
 var http = require('http');
+var https = require('https');
+
+var fs = require('fs');
+
 
 /**
  * Get port from environment and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+// app.set('port', port);
+// console.info('listening on port: ' + port);
+
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = http.createServer(app).listen(3000);
+
+/**
+ * Create HTTPS server.
+ */
+
+var httpsServer = https.createServer({key: fs.readFileSync('./privatekey.key'), cert: fs.readFileSync('./certificate.crt')}, app).listen(443);
 
 /**
  * Listen on provided port, on all network interfaces.

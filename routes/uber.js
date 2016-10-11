@@ -78,7 +78,36 @@ function getEstimate(req, res, next){
 }
 
 function sendReminder(req, res, next) {
-	res.json('ok');
+	var data = {
+		reminder_time: req.body.reminder_time, // in seconds
+		phone_number: req.body.phone_number, // +14155552671
+		event: {
+			name: req.body.event_name, // event name
+			location: req.body.event_location, // hospital name
+			time: req.body.event_time, // event time
+			latitude: req.body.event_latitude,
+			longitude: req.body.event_longitude
+		}
+	}
+	console.log(data);
+	var options = {
+		uri: 'https://api.uber.com/v1/reminders',
+		method: 'POST',
+		headers: {
+			Authorization: 'Token ' + uber_server_token
+		},
+		json: true,
+		body: data
+	}
+	rp(options)
+		.then(function(result){
+			var resultJson = {code: 200, status: 'success', data: result};
+			res.json(resultJson);
+		})
+		.catch(function(err){
+			console.log(err);
+			res.json('error');
+		});
 }
 
 module.exports = {mountTo: defineUberRoute};
